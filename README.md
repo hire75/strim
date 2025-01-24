@@ -1,0 +1,2 @@
+# strim
+monitoreo de strim
