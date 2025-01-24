@@ -49,61 +49,57 @@
         .iframe-container input:focus {
             outline: 2px solid #007bff;
         }
+        .error-message {
+            color: #ff4d4d;
+            font-size: 0.9em;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <h1>Mis Transmisiones en Vivo</h1>
     <div class="container">
-        <!-- Caja 1 -->
+        <!-- Repetición de cajas -->
         <div class="iframe-container">
-            <input type="text" placeholder="Ingresa el enlace del video" onchange="updateIframe(this)">
-            <iframe src="https://www.youtube.com/embed/default" allowfullscreen></iframe>
+            <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
+            <span class="error-message" style="display: none;">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
+            <iframe src="" allowfullscreen></iframe>
         </div>
-        <!-- Caja 2 -->
         <div class="iframe-container">
-            <input type="text" placeholder="Ingresa el enlace del video" onchange="updateIframe(this)">
-            <iframe src="https://www.youtube.com/embed/default" allowfullscreen></iframe>
+            <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
+            <span class="error-message" style="display: none;">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
+            <iframe src="" allowfullscreen></iframe>
         </div>
-        <!-- Caja 3 -->
-        <div class="iframe-container">
-            <input type="text" placeholder="Ingresa el enlace del video" onchange="updateIframe(this)">
-            <iframe src="https://www.facebook.com/plugins/video.php?href=default" allowfullscreen></iframe>
-        </div>
-        <!-- Caja 4 -->
-        <div class="iframe-container">
-            <input type="text" placeholder="Ingresa el enlace del video" onchange="updateIframe(this)">
-            <iframe src="https://www.facebook.com/plugins/video.php?href=default" allowfullscreen></iframe>
-        </div>
-        <!-- Caja 5 -->
-        <div class="iframe-container">
-            <input type="text" placeholder="Ingresa el enlace del video" onchange="updateIframe(this)">
-            <iframe src="https://twitter.com/i/broadcasts/1yoKMZarRbkxQ" allowfullscreen></iframe>
-        </div>
-        <!-- Caja 6 -->
-        <div class="iframe-container">
-            <input type="text" placeholder="Ingresa el enlace del video" onchange="updateIframe(this)">
-            <iframe src="https://twitter.com/i/broadcasts/1vOGwXvgdzqGB" allowfullscreen></iframe>
-        </div>
+        <!-- Agrega más cajas si es necesario -->
     </div>
 
     <script>
-        function updateIframe(inputElement) {
-            const iframe = inputElement.nextElementSibling; // Obtiene el iframe debajo del input
-            let videoUrl = inputElement.value.trim(); // Obtiene y limpia el enlace ingresado
+        function validateUrl(inputElement) {
+            const iframe = inputElement.nextElementSibling.nextElementSibling; // Obtiene el iframe
+            const errorMessage = inputElement.nextElementSibling; // Obtiene el mensaje de error
+            let videoUrl = inputElement.value.trim(); // Obtiene y limpia el valor ingresado
 
-            // Verifica si es un enlace válido para incrustar en iframe
-            if (videoUrl.includes("youtube.com")) {
+            // Validación básica para YouTube, Facebook o Twitter
+            const youtubePattern = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/;
+            const facebookPattern = /^(https?:\/\/)?(www\.)?facebook\.com\/.+\/videos\/.+/;
+            const twitterPattern = /^(https?:\/\/)?(www\.)?twitter\.com\/.+\/status\/.+/;
+
+            if (youtubePattern.test(videoUrl)) {
                 videoUrl = videoUrl.replace("watch?v=", "embed/");
-            } else if (videoUrl.includes("facebook.com")) {
+                errorMessage.style.display = "none";
+                iframe.src = videoUrl;
+            } else if (facebookPattern.test(videoUrl)) {
                 videoUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(videoUrl)}`;
-            } else if (videoUrl.includes("twitter.com")) {
-                // Twitter utiliza enlaces de transmisiones ya en formato embed
+                errorMessage.style.display = "none";
+                iframe.src = videoUrl;
+            } else if (twitterPattern.test(videoUrl)) {
+                errorMessage.style.display = "none";
+                iframe.src = videoUrl;
             } else {
-                alert("Por favor, ingresa un enlace válido de YouTube, Facebook o Twitter.");
-                return;
+                // Muestra un mensaje de error si la URL no es válida
+                errorMessage.style.display = "block";
+                iframe.src = "";
             }
-
-            iframe.src = videoUrl; // Actualiza el src del iframe
         }
     </script>
 </body>
