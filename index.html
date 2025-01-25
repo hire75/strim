@@ -14,7 +14,7 @@
         .container {
             display: grid;
             grid-template-columns: repeat(2, 1fr); /* 2 columnas */
-            gap: 20px; /* Espacio entre las ventanas */
+            gap: 20px; /* Espacio entre las cajas */
             padding: 20px;
             justify-content: center;
             max-width: 1200px;
@@ -30,12 +30,6 @@
             align-items: center;
             gap: 10px;
         }
-        .iframe-container iframe {
-            width: 100%;
-            height: 240px; /* Altura adaptada */
-            border: none;
-            border-radius: 8px;
-        }
         .iframe-container input {
             width: calc(100% - 20px);
             padding: 8px;
@@ -44,17 +38,32 @@
             background-color: #1e1e1e;
             color: #ffffff;
         }
-        h1 {
-            text-align: center;
-            margin: 20px 0;
-        }
         .iframe-container input:focus {
             outline: 2px solid #007bff;
+        }
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%; /* Hace las cajas cuadradas */
+        }
+        .iframe-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
         }
         .error-message {
             color: #ff4d4d;
             font-size: 0.9em;
             text-align: center;
+            display: none;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
         }
     </style>
 </head>
@@ -64,33 +73,41 @@
         <!-- Caja 1 -->
         <div class="iframe-container">
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
-            <span class="error-message" style="display: none;">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
-            <iframe src="" allowfullscreen></iframe>
+            <span class="error-message">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
+            <div class="iframe-wrapper">
+                <iframe src="" allowfullscreen></iframe>
+            </div>
         </div>
         <!-- Caja 2 -->
         <div class="iframe-container">
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
-            <span class="error-message" style="display: none;">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
-            <iframe src="" allowfullscreen></iframe>
+            <span class="error-message">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
+            <div class="iframe-wrapper">
+                <iframe src="" allowfullscreen></iframe>
+            </div>
         </div>
         <!-- Caja 3 -->
         <div class="iframe-container">
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
-            <span class="error-message" style="display: none;">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
-            <iframe src="" allowfullscreen></iframe>
+            <span class="error-message">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
+            <div class="iframe-wrapper">
+                <iframe src="" allowfullscreen></iframe>
+            </div>
         </div>
         <!-- Caja 4 -->
         <div class="iframe-container">
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
-            <span class="error-message" style="display: none;">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
-            <iframe src="" allowfullscreen></iframe>
+            <span class="error-message">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
+            <div class="iframe-wrapper">
+                <iframe src="" allowfullscreen></iframe>
+            </div>
         </div>
     </div>
 
     <script>
         function validateUrl(inputElement) {
-            const iframe = inputElement.nextElementSibling.nextElementSibling; // Obtiene el iframe
-            const errorMessage = inputElement.nextElementSibling; // Obtiene el mensaje de error
+            const iframe = inputElement.parentElement.querySelector('iframe'); // Encuentra el iframe dentro de la misma caja
+            const errorMessage = inputElement.nextElementSibling; // Encuentra el mensaje de error
             let videoUrl = inputElement.value.trim(); // Obtiene y limpia el valor ingresado
 
             // Validación básica para YouTube, Facebook o Twitter
