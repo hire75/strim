@@ -32,9 +32,23 @@
         }
         .iframe-container iframe {
             width: 100%;
-            height: 240px; /* Altura adaptada */
+            height: 0;
+            padding-bottom: 56.25%; /* Proporción de 16:9 */
             border: none;
             border-radius: 8px;
+            position: relative;
+        }
+        .iframe-container iframe {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* Proporción 16:9 */
         }
         .iframe-container input {
             width: calc(100% - 20px);
@@ -59,38 +73,46 @@
     </style>
 </head>
 <body>
-    <h1>Transmisiones SPR</h1>
+    <h1>Mis Transmisiones en Vivo</h1>
     <div class="container">
         <!-- Caja 1 -->
         <div class="iframe-container">
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
             <span class="error-message" style="display: none;">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
-            <iframe src="" allowfullscreen></iframe>
+            <div class="iframe-wrapper">
+                <iframe src="" allowfullscreen></iframe>
+            </div>
         </div>
         <!-- Caja 2 -->
         <div class="iframe-container">
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
             <span class="error-message" style="display: none;">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
-            <iframe src="" allowfullscreen></iframe>
+            <div class="iframe-wrapper">
+                <iframe src="" allowfullscreen></iframe>
+            </div>
         </div>
         <!-- Caja 3 -->
         <div class="iframe-container">
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
             <span class="error-message" style="display: none;">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
-            <iframe src="" allowfullscreen></iframe>
+            <div class="iframe-wrapper">
+                <iframe src="" allowfullscreen></iframe>
+            </div>
         </div>
         <!-- Caja 4 -->
         <div class="iframe-container">
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
             <span class="error-message" style="display: none;">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
-            <iframe src="" allowfullscreen></iframe>
+            <div class="iframe-wrapper">
+                <iframe src="" allowfullscreen></iframe>
+            </div>
         </div>
     </div>
 
     <script>
         function validateUrl(inputElement) {
-            const iframe = inputElement.nextElementSibling.nextElementSibling; // Obtiene el iframe
-            const errorMessage = inputElement.nextElementSibling; // Obtiene el mensaje de error
+            const iframe = inputElement.parentElement.querySelector('iframe'); // Encuentra el iframe dentro de la misma caja
+            const errorMessage = inputElement.nextElementSibling; // Encuentra el mensaje de error
             let videoUrl = inputElement.value.trim(); // Obtiene y limpia el valor ingresado
 
             // Validación básica para YouTube, Facebook o Twitter
@@ -118,4 +140,3 @@
     </script>
 </body>
 </html>
-
