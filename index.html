@@ -73,7 +73,7 @@
         <!-- Caja 1 -->
         <div class="iframe-container">
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
-            <span class="error-message">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
+            <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
             <div class="iframe-wrapper">
                 <iframe src="" allowfullscreen></iframe>
             </div>
@@ -81,7 +81,7 @@
         <!-- Caja 2 -->
         <div class="iframe-container">
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
-            <span class="error-message">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
+            <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
             <div class="iframe-wrapper">
                 <iframe src="" allowfullscreen></iframe>
             </div>
@@ -89,7 +89,7 @@
         <!-- Caja 3 -->
         <div class="iframe-container">
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
-            <span class="error-message">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
+            <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
             <div class="iframe-wrapper">
                 <iframe src="" allowfullscreen></iframe>
             </div>
@@ -97,7 +97,7 @@
         <!-- Caja 4 -->
         <div class="iframe-container">
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
-            <span class="error-message">URL no válida. Usa enlaces de YouTube, Facebook o Twitter.</span>
+            <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
             <div class="iframe-wrapper">
                 <iframe src="" allowfullscreen></iframe>
             </div>
@@ -110,7 +110,7 @@
             const errorMessage = inputElement.nextElementSibling; // Encuentra el mensaje de error
             let videoUrl = inputElement.value.trim(); // Obtiene y limpia el valor ingresado
 
-            // Validación básica para YouTube, Facebook o Twitter
+            // Validación básica para plataformas conocidas
             const youtubePattern = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/;
             const facebookPattern = /^(https?:\/\/)?(www\.)?facebook\.com\/.+\/videos\/.+/;
             const twitterPattern = /^(https?:\/\/)?(www\.)?twitter\.com\/.+\/status\/.+/;
@@ -124,6 +124,8 @@
                 errorMessage.style.display = "none";
                 iframe.src = videoUrl;
             } else if (twitterPattern.test(videoUrl)) {
+                // Twitter embedding for tweets
+                videoUrl = `https://twitframe.com/show?url=${encodeURIComponent(videoUrl)}`;
                 errorMessage.style.display = "none";
                 iframe.src = videoUrl;
             } else {
