@@ -4,23 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Transmisiones en Vivo</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+            gap: 20px;
+            padding: 20px;
+            justify-content: center;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .iframe-container {
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .iframe-container input {
+            width: calc(100% - 20px);
+            padding: 8px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        .iframe-container input:focus {
+            outline: 2px solid #007bff;
+        }
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* Relación de aspecto 16:9 */
+        }
+        .iframe-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        }
+        .error-message {
+            color: #ff4d4d;
+            font-size: 0.9em;
+            text-align: center;
+            display: none;
+        }
+        .platform-name {
+            color: #007bff;
+            font-size: 0.9em;
+            font-weight: bold;
+            text-align: center;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .refresh-button {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .refresh-button:hover {
+            background-color: #005bb5;
+        }
+        .twitter-tweet {
+            margin: auto;
+        }
+    </style>
 </head>
 <body>
     <h1>Mis Transmisiones en Vivo</h1>
     <div class="container">
         <!-- Caja 1 -->
         <div class="iframe-container">
-            <input type="text" id="url1" placeholder="Ingresa el enlace del video">
-            <span class="error-message" id="error1">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
-            <div class="iframe-wrapper" id="iframe-wrapper1"></div>
-            <span class="platform-name" id="platform1"></span>
-            <button class="refresh-button" onclick="refreshIframe(1)">Refrescar</button>
+            <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
+            <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
+            <div class="iframe-wrapper">
+                <div class="twitter-tweet-container"></div>
+                <iframe src="" allowfullscreen></iframe>
+            </div>
+            <span class="platform-name"></span>
+            <button class="refresh-button" onclick="refreshIframe(this)">Refrescar</button>
         </div>
-        <!-- Repite para más cajas si es necesario -->
+        <!-- Caja 2 -->
+        <div class="iframe-container">
+            <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
+            <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
+            <div class="iframe-wrapper">
+                <div class="twitter-tweet-container"></div>
+                <iframe src="" allowfullscreen></iframe>
+            </div>
+            <span class="platform-name"></span>
+            <button class="refresh-button" onclick="refreshIframe(this)">Refrescar</button>
+        </div>
+        <!-- Caja 3 -->
+        <div class="iframe-container">
+            <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
+            <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
+            <div class="iframe-wrapper">
+                <div class="twitter-tweet-container"></div>
+                <iframe src="" allowfullscreen></iframe>
+            </div>
+            <span class="platform-name"></span>
+            <button class="refresh-button" onclick="refreshIframe(this)">Refrescar</button>
+        </div>
+        <!-- Caja 4 -->
+        <div class="iframe-container">
+            <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
+            <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
+            <div class="iframe-wrapper">
+                <div class="twitter-tweet-container"></div>
+                <iframe src="" allowfullscreen></iframe>
+            </div>
+            <span class="platform-name"></span>
+            <button class="refresh-button" onclick="refreshIframe(this)">Refrescar</button>
+        </div>
     </div>
 
-    <script src="scripts.js"></script>
     <script>
         // Cargar el script de Twitter
         const twitterScript = document.createElement('script');
@@ -28,48 +144,55 @@
         twitterScript.async = true;
         document.body.appendChild(twitterScript);
 
-        // Función para validar y cargar el video
-        async function validateUrl(inputId) {
-            const inputElement = document.getElementById(`url${inputId}`);
-            const errorMessage = document.getElementById(`error${inputId}`);
-            const iframeWrapper = document.getElementById(`iframe-wrapper${inputId}`);
-            const platformName = document.getElementById(`platform${inputId}`);
-            const videoUrl = inputElement.value.trim();
+        function validateUrl(inputElement) {
+            const iframe = inputElement.parentElement.querySelector('iframe');
+            const errorMessage = inputElement.nextElementSibling;
+            const platformName = inputElement.parentElement.querySelector('.platform-name');
+            const twitterContainer = inputElement.parentElement.querySelector('.twitter-tweet-container');
+            let videoUrl = inputElement.value.trim();
 
-            // Enviar la URL al servidor para validación
-            const response = await fetch('process.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url: videoUrl }),
-            });
-            const data = await response.json();
+            // Patrones de validación
+            const youtubePattern = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/;
+            const facebookPattern = /^(https?:\/\/)?(www\.)?facebook\.com\/.+\/videos\/.+/;
+            const twitterPattern = /^(https?:\/\/)?(www\.)?(twitter\.com|x\.com)\/.+\/status\/.+/;
 
-            if (data.valid) {
+            if (youtubePattern.test(videoUrl)) {
+                videoUrl = videoUrl.replace("watch?v=", "embed/");
                 errorMessage.style.display = "none";
-                iframeWrapper.innerHTML = data.embedCode;
-                platformName.textContent = data.platform;
-
-                // Cargar el widget de Twitter si es necesario
-                if (data.platform === "Twitter" && window.twttr) {
-                    window.twttr.widgets.load(iframeWrapper);
+                iframe.src = videoUrl;
+                iframe.style.display = "block";
+                twitterContainer.innerHTML = ""; // Limpiar contenedor de Twitter
+                platformName.textContent = "YouTube";
+            } else if (facebookPattern.test(videoUrl)) {
+                videoUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(videoUrl)}`;
+                errorMessage.style.display = "none";
+                iframe.src = videoUrl;
+                iframe.style.display = "block";
+                twitterContainer.innerHTML = ""; // Limpiar contenedor de Twitter
+                platformName.textContent = "Facebook";
+            } else if (twitterPattern.test(videoUrl)) {
+                // Limpiar el iframe y mostrar el tweet
+                iframe.style.display = "none";
+                twitterContainer.innerHTML = `<blockquote class="twitter-tweet"><a href="${videoUrl}"></a></blockquote>`;
+                errorMessage.style.display = "none";
+                platformName.textContent = "Twitter";
+                // Cargar el tweet usando el widget de Twitter
+                if (window.twttr) {
+                    window.twttr.widgets.load(twitterContainer);
                 }
             } else {
                 errorMessage.style.display = "block";
-                iframeWrapper.innerHTML = "";
+                iframe.src = "";
+                iframe.style.display = "none";
+                twitterContainer.innerHTML = "";
                 platformName.textContent = "";
             }
         }
 
-        // Función para refrescar el iframe
-        function refreshIframe(inputId) {
-            const iframeWrapper = document.getElementById(`iframe-wrapper${inputId}`);
-            if (iframeWrapper.innerHTML) {
-                iframeWrapper.innerHTML = iframeWrapper.innerHTML;
-                if (window.twttr) {
-                    window.twttr.widgets.load(iframeWrapper);
-                }
+        function refreshIframe(buttonElement) {
+            const iframe = buttonElement.parentElement.querySelector('iframe');
+            if (iframe.src) {
+                iframe.src = iframe.src; // Recarga el iframe
             }
         }
     </script>
