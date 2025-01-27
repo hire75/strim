@@ -83,6 +83,9 @@
         .refresh-button:hover {
             background-color: #005bb5;
         }
+        .twitter-tweet {
+            margin: auto;
+        }
     </style>
 </head>
 <body>
@@ -93,6 +96,7 @@
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
             <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
             <div class="iframe-wrapper">
+                <div class="twitter-tweet-container"></div>
                 <iframe src="" allowfullscreen></iframe>
             </div>
             <span class="platform-name"></span>
@@ -103,6 +107,7 @@
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
             <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
             <div class="iframe-wrapper">
+                <div class="twitter-tweet-container"></div>
                 <iframe src="" allowfullscreen></iframe>
             </div>
             <span class="platform-name"></span>
@@ -113,6 +118,7 @@
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
             <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
             <div class="iframe-wrapper">
+                <div class="twitter-tweet-container"></div>
                 <iframe src="" allowfullscreen></iframe>
             </div>
             <span class="platform-name"></span>
@@ -123,6 +129,7 @@
             <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
             <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
             <div class="iframe-wrapper">
+                <div class="twitter-tweet-container"></div>
                 <iframe src="" allowfullscreen></iframe>
             </div>
             <span class="platform-name"></span>
@@ -131,10 +138,17 @@
     </div>
 
     <script>
+        // Cargar el script de Twitter
+        const twitterScript = document.createElement('script');
+        twitterScript.src = "https://platform.twitter.com/widgets.js";
+        twitterScript.async = true;
+        document.body.appendChild(twitterScript);
+
         function validateUrl(inputElement) {
             const iframe = inputElement.parentElement.querySelector('iframe');
             const errorMessage = inputElement.nextElementSibling;
             const platformName = inputElement.parentElement.querySelector('.platform-name');
+            const twitterContainer = inputElement.parentElement.querySelector('.twitter-tweet-container');
             let videoUrl = inputElement.value.trim();
 
             // Patrones de validación
@@ -146,27 +160,40 @@
                 videoUrl = videoUrl.replace("watch?v=", "embed/");
                 errorMessage.style.display = "none";
                 iframe.src = videoUrl;
+                iframe.style.display = "block";
+                twitterContainer.innerHTML = ""; // Limpiar contenedor de Twitter
                 platformName.textContent = "YouTube";
             } else if (facebookPattern.test(videoUrl)) {
                 videoUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(videoUrl)}`;
                 errorMessage.style.display = "none";
                 iframe.src = videoUrl;
+                iframe.style.display = "block";
+                twitterContainer.innerHTML = ""; // Limpiar contenedor de Twitter
                 platformName.textContent = "Facebook";
             } else if (twitterPattern.test(videoUrl)) {
-                videoUrl = `https://twitframe.com/show?url=${encodeURIComponent(videoUrl)}`;
+                // Limpiar el iframe y mostrar el tweet
+                iframe.style.display = "none";
+                twitterContainer.innerHTML = `<blockquote class="twitter-tweet"><a href="${videoUrl}"></a></blockquote>`;
                 errorMessage.style.display = "none";
-                iframe.src = videoUrl;
                 platformName.textContent = "Twitter";
+                // Cargar el tweet usando el widget de Twitter
+                if (window.twttr) {
+                    window.twttr.widgets.load(twitterContainer);
+                }
             } else {
                 errorMessage.style.display = "block";
                 iframe.src = "";
+                iframe.style.display = "none";
+                twitterContainer.innerHTML = "";
                 platformName.textContent = "";
             }
         }
 
         function refreshIframe(buttonElement) {
             const iframe = buttonElement.parentElement.querySelector('iframe');
-            iframe.src = iframe.src; // Recarga el iframe
+            if (iframe.src) {
+                iframe.src = iframe.src; // Recarga el iframe
+            }
         }
     </script>
 </body>
