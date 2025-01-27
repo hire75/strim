@@ -13,7 +13,7 @@
         }
         .container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             padding: 20px;
             justify-content: center;
@@ -86,6 +86,20 @@
         .twitter-tweet {
             margin: auto;
         }
+        .stream-not-supported {
+            text-align: center;
+            padding: 20px;
+            background-color: #2c2c2c;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        .stream-not-supported a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .stream-not-supported a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -93,48 +107,13 @@
     <div class="container">
         <!-- Caja 1 -->
         <div class="iframe-container">
-            <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
-            <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
-            <div class="iframe-wrapper">
-                <div class="twitter-tweet-container"></div>
-                <iframe src="" allowfullscreen></iframe>
-            </div>
-            <span class="platform-name"></span>
-            <button class="refresh-button" onclick="refreshIframe(this)">Refrescar</button>
+            <input type="text" id="url1" placeholder="Ingresa el enlace del video">
+            <span class="error-message" id="error1">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
+            <div class="iframe-wrapper" id="iframe-wrapper1"></div>
+            <span class="platform-name" id="platform1"></span>
+            <button class="refresh-button" onclick="refreshIframe(1)">Refrescar</button>
         </div>
-        <!-- Caja 2 -->
-        <div class="iframe-container">
-            <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
-            <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
-            <div class="iframe-wrapper">
-                <div class="twitter-tweet-container"></div>
-                <iframe src="" allowfullscreen></iframe>
-            </div>
-            <span class="platform-name"></span>
-            <button class="refresh-button" onclick="refreshIframe(this)">Refrescar</button>
-        </div>
-        <!-- Caja 3 -->
-        <div class="iframe-container">
-            <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
-            <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
-            <div class="iframe-wrapper">
-                <div class="twitter-tweet-container"></div>
-                <iframe src="" allowfullscreen></iframe>
-            </div>
-            <span class="platform-name"></span>
-            <button class="refresh-button" onclick="refreshIframe(this)">Refrescar</button>
-        </div>
-        <!-- Caja 4 -->
-        <div class="iframe-container">
-            <input type="text" placeholder="Ingresa el enlace del video" oninput="validateUrl(this)">
-            <span class="error-message">URL no válida. Usa enlaces compatibles (YouTube, Facebook, Twitter).</span>
-            <div class="iframe-wrapper">
-                <div class="twitter-tweet-container"></div>
-                <iframe src="" allowfullscreen></iframe>
-            </div>
-            <span class="platform-name"></span>
-            <button class="refresh-button" onclick="refreshIframe(this)">Refrescar</button>
-        </div>
+        <!-- Repite para más cajas si es necesario -->
     </div>
 
     <script>
@@ -144,57 +123,93 @@
         twitterScript.async = true;
         document.body.appendChild(twitterScript);
 
-        function validateUrl(inputElement) {
-            const iframe = inputElement.parentElement.querySelector('iframe');
-            const errorMessage = inputElement.nextElementSibling;
-            const platformName = inputElement.parentElement.querySelector('.platform-name');
-            const twitterContainer = inputElement.parentElement.querySelector('.twitter-tweet-container');
-            let videoUrl = inputElement.value.trim();
+        // Función para validar y cargar el video
+        async function validateUrl(inputId) {
+            const inputElement = document.getElementById(`url${inputId}`);
+            const errorMessage = document.getElementById(`error${inputId}`);
+            const iframeWrapper = document.getElementById(`iframe-wrapper${inputId}`);
+            const platformName = document.getElementById(`platform${inputId}`);
+            const videoUrl = inputElement.value.trim();
 
-            // Patrones de validación
-            const youtubePattern = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/;
-            const facebookPattern = /^(https?:\/\/)?(www\.)?facebook\.com\/.+\/videos\/.+/;
-            const twitterPattern = /^(https?:\/\/)?(www\.)?(twitter\.com|x\.com)\/.+\/status\/.+/;
+            // Enviar la URL al servidor para validación
+            const response = await fetch('process.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: videoUrl }),
+            });
+            const data = await response.json();
 
-            if (youtubePattern.test(videoUrl)) {
-                videoUrl = videoUrl.replace("watch?v=", "embed/");
+            if (data.valid) {
                 errorMessage.style.display = "none";
-                iframe.src = videoUrl;
-                iframe.style.display = "block";
-                twitterContainer.innerHTML = ""; // Limpiar contenedor de Twitter
-                platformName.textContent = "YouTube";
-            } else if (facebookPattern.test(videoUrl)) {
-                videoUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(videoUrl)}`;
-                errorMessage.style.display = "none";
-                iframe.src = videoUrl;
-                iframe.style.display = "block";
-                twitterContainer.innerHTML = ""; // Limpiar contenedor de Twitter
-                platformName.textContent = "Facebook";
-            } else if (twitterPattern.test(videoUrl)) {
-                // Limpiar el iframe y mostrar el tweet
-                iframe.style.display = "none";
-                twitterContainer.innerHTML = `<blockquote class="twitter-tweet"><a href="${videoUrl}"></a></blockquote>`;
-                errorMessage.style.display = "none";
-                platformName.textContent = "Twitter";
-                // Cargar el tweet usando el widget de Twitter
-                if (window.twttr) {
-                    window.twttr.widgets.load(twitterContainer);
+                iframeWrapper.innerHTML = data.embedCode;
+                platformName.textContent = data.platform;
+
+                // Cargar el widget de Twitter si es necesario
+                if (data.platform === "Twitter" && window.twttr) {
+                    window.twttr.widgets.load(iframeWrapper);
                 }
             } else {
                 errorMessage.style.display = "block";
-                iframe.src = "";
-                iframe.style.display = "none";
-                twitterContainer.innerHTML = "";
+                iframeWrapper.innerHTML = data.embedCode || "";
                 platformName.textContent = "";
             }
         }
 
-        function refreshIframe(buttonElement) {
-            const iframe = buttonElement.parentElement.querySelector('iframe');
-            if (iframe.src) {
-                iframe.src = iframe.src; // Recarga el iframe
+        // Función para refrescar el iframe
+        function refreshIframe(inputId) {
+            const iframeWrapper = document.getElementById(`iframe-wrapper${inputId}`);
+            if (iframeWrapper.innerHTML) {
+                iframeWrapper.innerHTML = iframeWrapper.innerHTML;
+                if (window.twttr) {
+                    window.twttr.widgets.load(iframeWrapper);
+                }
             }
         }
     </script>
+
+    <?php
+    // Script PHP para procesar las URLs
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        header('Content-Type: application/json');
+        $data = json_decode(file_get_contents('php://input'), true);
+        $url = $data['url'];
+
+        // Validar la URL
+        $youtubePattern = '/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/';
+        $facebookPattern = '/^(https?:\/\/)?(www\.)?facebook\.com\/.+\/videos\/.+/';
+        $twitterPattern = '/^(https?:\/\/)?(www\.)?(twitter\.com|x\.com)\/.+\/status\/.+/';
+
+        if (preg_match($youtubePattern, $url)) {
+            $embedUrl = str_replace("watch?v=", "embed/", $url);
+            echo json_encode([
+                'valid' => true,
+                'platform' => 'YouTube',
+                'embedCode' => "<iframe src='$embedUrl' allowfullscreen></iframe>",
+            ]);
+        } elseif (preg_match($facebookPattern, $url)) {
+            $embedUrl = "https://www.facebook.com/plugins/video.php?href=" . urlencode($url);
+            echo json_encode([
+                'valid' => true,
+                'platform' => 'Facebook',
+                'embedCode' => "<iframe src='$embedUrl' allowfullscreen></iframe>",
+            ]);
+        } elseif (preg_match($twitterPattern, $url)) {
+            echo json_encode([
+                'valid' => true,
+                'platform' => 'Twitter',
+                'embedCode' => "<blockquote class='twitter-tweet' data-lang='es' data-theme='dark'><a href='$url'></a></blockquote>",
+            ]);
+        } else {
+            // Enlace no compatible
+            echo json_encode([
+                'valid' => false,
+                'embedCode' => "<div class='stream-not-supported'><p>Este enlace no se puede incrustar. Por favor, visita el sitio original:</p><a href='$url' target='_blank'>Ver en sitio original</a></div>",
+            ]);
+        }
+    }
+    ?>
 </body>
 </html>
+    
