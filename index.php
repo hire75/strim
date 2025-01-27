@@ -67,6 +67,9 @@
             const iframeWrapper = document.getElementById(`iframe-wrapper${inputId}`);
             if (iframeWrapper.innerHTML) {
                 iframeWrapper.innerHTML = iframeWrapper.innerHTML;
+                if (window.twttr) {
+                    window.twttr.widgets.load(iframeWrapper);
+                }
             }
         }
     </script>
