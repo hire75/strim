@@ -13,8 +13,8 @@
         }
         .container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 columnas */
-            gap: 20px; /* Espacio entre las cajas */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+            gap: 20px;
             padding: 20px;
             justify-content: center;
             max-width: 1200px;
@@ -44,7 +44,7 @@
         .iframe-wrapper {
             position: relative;
             width: 100%;
-            padding-bottom: 100%; /* Hace las cajas cuadradas */
+            padding-bottom: 56.25%; /* Relación de aspecto 16:9 */
         }
         .iframe-wrapper iframe {
             position: absolute;
@@ -61,9 +61,27 @@
             text-align: center;
             display: none;
         }
+        .platform-name {
+            color: #007bff;
+            font-size: 0.9em;
+            font-weight: bold;
+            text-align: center;
+        }
         h1 {
             text-align: center;
             margin: 20px 0;
+        }
+        .refresh-button {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .refresh-button:hover {
+            background-color: #005bb5;
         }
     </style>
 </head>
@@ -77,6 +95,8 @@
             <div class="iframe-wrapper">
                 <iframe src="" allowfullscreen></iframe>
             </div>
+            <span class="platform-name"></span>
+            <button class="refresh-button" onclick="refreshIframe(this)">Refrescar</button>
         </div>
         <!-- Caja 2 -->
         <div class="iframe-container">
@@ -85,6 +105,8 @@
             <div class="iframe-wrapper">
                 <iframe src="" allowfullscreen></iframe>
             </div>
+            <span class="platform-name"></span>
+            <button class="refresh-button" onclick="refreshIframe(this)">Refrescar</button>
         </div>
         <!-- Caja 3 -->
         <div class="iframe-container">
@@ -93,6 +115,8 @@
             <div class="iframe-wrapper">
                 <iframe src="" allowfullscreen></iframe>
             </div>
+            <span class="platform-name"></span>
+            <button class="refresh-button" onclick="refreshIframe(this)">Refrescar</button>
         </div>
         <!-- Caja 4 -->
         <div class="iframe-container">
@@ -101,16 +125,19 @@
             <div class="iframe-wrapper">
                 <iframe src="" allowfullscreen></iframe>
             </div>
+            <span class="platform-name"></span>
+            <button class="refresh-button" onclick="refreshIframe(this)">Refrescar</button>
         </div>
     </div>
 
     <script>
         function validateUrl(inputElement) {
-            const iframe = inputElement.parentElement.querySelector('iframe'); // Encuentra el iframe dentro de la misma caja
-            const errorMessage = inputElement.nextElementSibling; // Encuentra el mensaje de error
-            let videoUrl = inputElement.value.trim(); // Obtiene y limpia el valor ingresado
+            const iframe = inputElement.parentElement.querySelector('iframe');
+            const errorMessage = inputElement.nextElementSibling;
+            const platformName = inputElement.parentElement.querySelector('.platform-name');
+            let videoUrl = inputElement.value.trim();
 
-            // Validación básica para plataformas conocidas
+            // Patrones de validación
             const youtubePattern = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)/;
             const facebookPattern = /^(https?:\/\/)?(www\.)?facebook\.com\/.+\/videos\/.+/;
             const twitterPattern = /^(https?:\/\/)?(www\.)?twitter\.com\/.+\/status\/.+/;
@@ -119,20 +146,27 @@
                 videoUrl = videoUrl.replace("watch?v=", "embed/");
                 errorMessage.style.display = "none";
                 iframe.src = videoUrl;
+                platformName.textContent = "YouTube";
             } else if (facebookPattern.test(videoUrl)) {
                 videoUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(videoUrl)}`;
                 errorMessage.style.display = "none";
                 iframe.src = videoUrl;
+                platformName.textContent = "Facebook";
             } else if (twitterPattern.test(videoUrl)) {
-                // Twitter embedding for tweets
                 videoUrl = `https://twitframe.com/show?url=${encodeURIComponent(videoUrl)}`;
                 errorMessage.style.display = "none";
                 iframe.src = videoUrl;
+                platformName.textContent = "Twitter";
             } else {
-                // Muestra un mensaje de error si la URL no es válida
                 errorMessage.style.display = "block";
                 iframe.src = "";
+                platformName.textContent = "";
             }
+        }
+
+        function refreshIframe(buttonElement) {
+            const iframe = buttonElement.parentElement.querySelector('iframe');
+            iframe.src = iframe.src; // Recarga el iframe
         }
     </script>
 </body>
